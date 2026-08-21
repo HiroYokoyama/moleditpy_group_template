@@ -21,7 +21,7 @@ logger = logging.getLogger(__name__)
 
 # --- Plugin Metadata ---
 PLUGIN_NAME = "Group Template"
-PLUGIN_VERSION = "0.1.0"
+PLUGIN_VERSION = "0.1.1"
 PLUGIN_AUTHOR = "HiroYokoyama"
 PLUGIN_DESCRIPTION = (
     "Palette of ~300 substituent group abbreviations (Me, Ph, Boc, Ts, TBS, ...) "

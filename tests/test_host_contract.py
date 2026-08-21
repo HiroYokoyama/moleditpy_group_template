@@ -76,7 +76,7 @@ def test_host_pushes_undo_itself_after_placement():
 
 
 def test_editor_bond_length_matches_our_scale():
-    from Group_Template.builder import BOND_SCALE
+    from group_template.builder import BOND_SCALE
 
     source = read("utils/constants.py")
     line = next(

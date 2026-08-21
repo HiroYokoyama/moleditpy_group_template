@@ -1,7 +1,7 @@
 """Placement must bond to the clicked atom, never overwrite it."""
 
-from Group_Template.builder import build_template
-from Group_Template.placement import PlacementOverride, place_fragment
+from group_template.builder import build_template
+from group_template.placement import PlacementOverride, place_fragment
 
 from .fakes import FakeScene
 

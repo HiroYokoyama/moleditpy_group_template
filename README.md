@@ -1,6 +1,6 @@
 # Group Template
 
-[![CI](https://github.com/HiroYokoyama/moleditpy_group_template/actions/workflows/ci.yml/badge.svg)](https://github.com/HiroYokoyama/moleditpy_group_template/actions/workflows/ci.yml)
+[![Tests](https://github.com/HiroYokoyama/moleditpy_group_template/actions/workflows/tests.yml/badge.svg)](https://github.com/HiroYokoyama/moleditpy_group_template/actions/workflows/tests.yml)
 ![coverage](https://img.shields.io/badge/coverage-%3E90%25-brightgreen)
 ![license](https://img.shields.io/badge/license-GPL--3.0-blue)
 
@@ -26,7 +26,7 @@ atom is *replaced* by the template's first atom.
 
 ## Install
 
-Download `GroupTemplate.zip` from the
+Download `group_template_<version>.zip` from the
 [latest release](https://github.com/HiroYokoyama/moleditpy_group_template/releases)
 and unzip it into your user plugin directory, or install it from the **Plugin
 Installer** plugin. Restart MoleditPy, or use **Plugins → Reload All Plugins**.

@@ -4,8 +4,8 @@ import math
 
 import pytest
 
-from Group_Template.builder import BOND_SCALE, MODE_PREFIX, build_template, mode_name
-from Group_Template.library import GROUPS
+from group_template.builder import BOND_SCALE, MODE_PREFIX, build_template, mode_name
+from group_template.library import GROUPS
 
 
 def test_builds_expected_shape_for_benzene():

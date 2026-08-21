@@ -4,8 +4,8 @@ import math
 
 import pytest
 
-from Group_Template.builder import build_template
-from Group_Template.preview import (
+from group_template.builder import build_template
+from group_template.preview import (
     ATTACHMENT_ID,
     atom_label,
     fit_transform,
@@ -115,7 +115,7 @@ def test_render_pixmap_ignores_bonds_with_unknown_atoms(qapp):
 def test_every_library_group_renders(qapp):
     from PyQt6.QtGui import QColor
 
-    from Group_Template.library import GROUPS
+    from group_template.library import GROUPS
 
     for group in GROUPS:
         template = build_template(group.label, group.smiles)

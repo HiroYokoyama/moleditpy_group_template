@@ -3,7 +3,7 @@
 import pytest
 from rdkit import Chem
 
-from Group_Template.library import GROUPS, categories, search
+from group_template.library import GROUPS, categories, search
 
 
 def test_library_is_large():

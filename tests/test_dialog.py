@@ -2,9 +2,9 @@
 
 import pytest
 
-from Group_Template.builder import MODE_PREFIX
-from Group_Template.library import GROUPS
-from Group_Template.palette_dialog import ALL_CATEGORIES, GroupPaletteDialog
+from group_template.builder import MODE_PREFIX
+from group_template.library import GROUPS
+from group_template.palette_dialog import ALL_CATEGORIES, GroupPaletteDialog
 
 from .fakes import FakeContext
 

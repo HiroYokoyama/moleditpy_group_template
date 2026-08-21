@@ -4,7 +4,7 @@ import re
 
 import pytest
 
-import Group_Template as plugin
+import group_template as plugin
 
 from .fakes import FakeContext
 
