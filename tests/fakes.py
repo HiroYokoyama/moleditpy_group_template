@@ -84,12 +84,40 @@ class FakeScene:
         self.updated += 1
 
 
+class FakeGhostAtom:
+    """A ghost atom in the hover preview; is_visible drives the label path."""
+
+    def __init__(self, symbol: str = "*") -> None:
+        self.symbol = symbol
+        self.is_visible = True
+
+
 class FakePreview:
+    """Stands in for TemplatePreviewItem."""
+
     def __init__(self) -> None:
         self.hidden = 0
+        self.updates = 0
+        self.mark_first_atom = False
+        self.ghost_atoms: List[FakeGhostAtom] = []
+        self.replaced_label_path = "existing-label-covered"
+        self.geometry_calls: List[Any] = []
 
     def hide(self) -> None:
         self.hidden += 1
+
+    def update(self) -> None:
+        self.updates += 1
+
+    def set_user_template_geometry(
+        self, points: Any, bonds_info: Any, atoms_data: Any
+    ) -> str:
+        """The host rebuilds the ghost and marks atom 0 as a replacement."""
+        self.geometry_calls.append((points, bonds_info, atoms_data))
+        self.mark_first_atom = True
+        self.ghost_atoms = [FakeGhostAtom(a.get("symbol", "C")) for a in atoms_data]
+        self.replaced_label_path = "existing-label-covered"
+        return "host"
 
 
 class FakeUiManager:

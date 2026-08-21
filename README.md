@@ -4,7 +4,7 @@
 ![coverage](https://img.shields.io/badge/coverage-%3E90%25-brightgreen)
 ![license](https://img.shields.io/badge/license-GPL--3.0-blue)
 
-A searchable palette of **313 substituent group abbreviations** for
+A searchable palette of **310 substituent group abbreviations** for
 [MoleditPy](https://github.com/HiroYokoyama/python_molecular_editor) — Me, Ph,
 Boc, Ts, TBS, Bpin, amino-acid side chains, nucleobases and more.
 
@@ -22,7 +22,11 @@ Every thumbnail shows a `*` where the group bonds on:
   valence stays visible.
 
 This differs from MoleditPy's built-in **User Templates**, where the clicked
-atom is *replaced* by the template's first atom.
+atom is *replaced* by the template's first atom. The hover preview shows the
+attaching behaviour too: your atom keeps its label, and the connecting terminal
+is marked with a circle.
+
+Your own user templates are untouched — they still replace, exactly as before.
 
 ## Install
 

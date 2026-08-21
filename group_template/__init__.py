@@ -21,10 +21,10 @@ logger = logging.getLogger(__name__)
 
 # --- Plugin Metadata ---
 PLUGIN_NAME = "Group Template"
-PLUGIN_VERSION = "0.1.1"
+PLUGIN_VERSION = "0.2.0"
 PLUGIN_AUTHOR = "HiroYokoyama"
 PLUGIN_DESCRIPTION = (
-    "Palette of ~300 substituent group abbreviations (Me, Ph, Boc, Ts, TBS, ...) "
+    "Palette of 310 substituent group abbreviations (Me, Ph, Boc, Ts, TBS, ...) "
     "placed with the 2D editor's user-template mode."
 )
 PLUGIN_CATEGORY = "Editing"

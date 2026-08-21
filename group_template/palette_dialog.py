@@ -1,14 +1,15 @@
 """The group palette: a filterable grid of clickable structure tiles.
 
 Clicking a tile hands the group to the host's own user-template placement mode,
-which draws the hover preview, snaps to a nearby atom and merges template atom 0
-into the atom you click. This plugin never writes anything.
+which draws the hover preview and snaps to a nearby atom. What that click then
+does is this plugin's own (see placement.py): the group is bonded to the clicked
+atom instead of replacing it. This plugin never writes anything.
 """
 
 import logging
 from typing import Any, Dict, List, Optional
 
-from PyQt6.QtCore import Qt, QTimer
+from PyQt6.QtCore import QEvent, Qt, QTimer
 from PyQt6.QtWidgets import (
     QComboBox,
     QDialog,
@@ -25,7 +26,7 @@ from PyQt6.QtWidgets import (
 
 from .builder import build_template, mode_name, MODE_PREFIX
 from .library import Group, categories, search
-from .placement import PlacementOverride
+from .placement import PlacementOverride, PreviewOverride
 from .preview import render_pixmap
 
 logger = logging.getLogger(__name__)
@@ -107,6 +108,9 @@ class GroupPaletteDialog(QDialog):
         # Groups bond to the clicked atom; the host would replace it instead.
         self.override = PlacementOverride(self._scene(), MODE_PREFIX)
         self.override.install()
+        # ...and the hover preview has to show that, not a replacement.
+        self.preview_override = PreviewOverride(self._scene(), MODE_PREFIX)
+        self.preview_override.install()
 
         # The host resets the mode on its own (Esc, another tool); drop our
         # highlight when that happens instead of showing a stale selection.
@@ -286,12 +290,25 @@ class GroupPaletteDialog(QDialog):
         except (AttributeError, RuntimeError, ValueError) as exc:
             logger.warning("Could not clear template preview: %s", exc)
 
+    def changeEvent(self, event: Any) -> None:  # noqa: N802 (Qt naming)
+        """Redraw the thumbnails when the theme changes under us.
+
+        They are cached with the text colour baked in, so a palette switch
+        (the Dark Mode Theme plugin does exactly this) would otherwise leave
+        dark strokes on a dark tile.
+        """
+        if event.type() == QEvent.Type.PaletteChange and self._pixmaps:
+            self._pixmaps.clear()
+            self.refresh_grid()
+        super().changeEvent(event)
+
     # --- teardown ---
 
     def _teardown(self) -> None:
         if self._poll is not None:
             self._poll.stop()
         self.override.remove()
+        self.preview_override.remove()
         self._leave_template_mode()
         # Without this the next open reuses a dead window and picking dies.
         self.context.register_window("palette", None)

@@ -85,3 +85,52 @@ def test_search_ignores_surrounding_whitespace():
 
 def test_unknown_query_returns_nothing():
     assert search("definitely-not-a-group") == []
+
+
+# Structures that were wrong once, plus the positional isomers most easily
+# mixed up. Each reference is written from the name, independently of library.py.
+REFERENCE_STRUCTURES = {
+    "9-Anthryl": "*c1c2ccccc2cc2ccccc12",  # was a phenanthrene skeleton
+    "1-Pyrenyl": "*c1ccc2ccc3cccc4ccc1c2c34",  # was pyren-2-yl
+    "DMB": "*Cc1ccc(OC)cc1OC",  # was the 3,4 isomer (veratryl)
+    "1-Ad": "*C12CC3CC(CC(C3)C1)C2",
+    "2-Ad": "*C1C2CC3CC(C2)CC1C3",
+    "2-Norbornyl": "*C1CC2CCC1C2",
+    "Bicyclopentyl": "*C12CC(C1)C2",
+    "o-Tol": "*c1ccccc1C",
+    "m-Tol": "*c1cccc(C)c1",
+    "p-Tol": "*c1ccc(C)cc1",
+    "Mes": "*c1c(C)cc(C)cc1C",
+    "3-Furyl": "*c1ccoc1",
+    "3-Thienyl": "*c1ccsc1",
+    "2-Py": "*c1ccccn1",
+    "3-Py": "*c1cccnc1",
+    "4-Py": "*c1ccncc1",
+    "Styryl": "*C=Cc1ccccc1",
+    "Cinnamyl": "*CC=Cc1ccccc1",
+    "Trp": "*Cc1c[nH]c2ccccc12",
+    "Bpin": "*B1OC(C)(C)C(C)(C)O1",
+}
+
+
+@pytest.mark.parametrize("label,reference", sorted(REFERENCE_STRUCTURES.items()))
+def test_structure_matches_its_name(label, reference):
+    group = next(g for g in GROUPS if g.label == label)
+    assert Chem.CanonSmiles(group.smiles) == Chem.CanonSmiles(reference)
+
+
+def test_no_two_entries_in_a_category_share_a_structure():
+    # Cross-category repeats are deliberate (Bn is findable under Aryl and as a
+    # protecting group); two identical tiles in one category are just noise.
+    seen = {}
+    for group in GROUPS:
+        key = (group.category, Chem.CanonSmiles(group.smiles))
+        assert key not in seen, f"{group.label} duplicates {seen.get(key)}"
+        seen[key] = group.label
+
+
+def test_styryl_and_cinnamyl_are_distinct():
+    styryl = next(g for g in GROUPS if g.label == "Styryl")
+    cinnamyl = next(g for g in GROUPS if g.label == "Cinnamyl")
+    assert Chem.CanonSmiles(styryl.smiles) != Chem.CanonSmiles(cinnamyl.smiles)
+    assert "cinnamyl" not in styryl.aliases.lower()

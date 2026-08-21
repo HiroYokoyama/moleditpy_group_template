@@ -1,7 +1,7 @@
 """Placement must bond to the clicked atom, never overwrite it."""
 
 from group_template.builder import build_template
-from group_template.placement import PlacementOverride, place_fragment
+from group_template.placement import PlacementOverride, PreviewOverride, place_fragment
 
 from .fakes import FakeScene
 
@@ -187,3 +187,87 @@ def test_commit_failure_is_swallowed():
     scene.add_user_template_fragment(
         {"points": [(0, 0)], "atoms_data": [{"symbol": "C"}], "bonds_info": []}
     )
+
+
+# --- hover preview -------------------------------------------------------
+
+
+def preview_args(label, smiles):
+    template, ctx = context_for(label, smiles)
+    return ctx["points"], ctx["bonds_info"], ctx["atoms_data"]
+
+
+def test_preview_hides_the_dummy_ghost_when_attaching():
+    scene = FakeScene()
+    override = PreviewOverride(scene, MODE_PREFIX)
+    assert override.install()
+    scene.mode = MODE_PREFIX + "Ph"
+    scene.template_context = {"attachment_atom": scene.add_existing_atom("N")}
+
+    scene.template_preview.set_user_template_geometry(*preview_args("Ph", "*c1ccccc1"))
+
+    # An invisible ghost has no label ellipse, so the host draws its circle.
+    assert scene.template_preview.ghost_atoms[0].is_visible is False
+    assert all(g.is_visible for g in scene.template_preview.ghost_atoms[1:])
+
+
+def test_preview_does_not_cover_the_clicked_atoms_label():
+    scene = FakeScene()
+    PreviewOverride(scene, MODE_PREFIX).install()
+    scene.mode = MODE_PREFIX + "OMe"
+    scene.template_context = {"attachment_atom": scene.add_existing_atom("N")}
+
+    scene.template_preview.set_user_template_geometry(*preview_args("OMe", "*OC"))
+
+    # The atom keeps its element, so whiting out its label would be a lie.
+    path = scene.template_preview.replaced_label_path
+    assert path != "existing-label-covered"
+    assert path.isEmpty()
+
+
+def test_preview_keeps_the_dummy_for_free_placement():
+    scene = FakeScene()
+    PreviewOverride(scene, MODE_PREFIX).install()
+    scene.mode = MODE_PREFIX + "Ph"
+    scene.template_context = {"attachment_atom": None}
+
+    scene.template_preview.set_user_template_geometry(*preview_args("Ph", "*c1ccccc1"))
+
+    # Free placement really does create the '*' atom, so it must stay visible.
+    assert scene.template_preview.ghost_atoms[0].is_visible is True
+    assert scene.template_preview.replaced_label_path == "existing-label-covered"
+
+
+def test_preview_leaves_foreign_modes_alone():
+    scene = FakeScene()
+    PreviewOverride(scene, MODE_PREFIX).install()
+    scene.mode = "template_user_MyOwnTemplate"
+    scene.template_context = {"attachment_atom": scene.add_existing_atom("C")}
+
+    result = scene.template_preview.set_user_template_geometry(
+        *preview_args("Ph", "*c1ccccc1")
+    )
+
+    assert result == "host"
+    assert scene.template_preview.ghost_atoms[0].is_visible is True
+    assert scene.template_preview.replaced_label_path == "existing-label-covered"
+
+
+def test_preview_override_restores_the_host_method():
+    scene = FakeScene()
+    override = PreviewOverride(scene, MODE_PREFIX)
+    override.install()
+    assert "set_user_template_geometry" in scene.template_preview.__dict__
+
+    override.remove()
+
+    assert "set_user_template_geometry" not in scene.template_preview.__dict__
+    assert not override.installed
+
+
+def test_preview_override_without_a_preview_is_harmless():
+    scene = FakeScene()
+    scene.template_preview = None
+    override = PreviewOverride(scene, MODE_PREFIX)
+    assert override.install() is False
+    override.remove()

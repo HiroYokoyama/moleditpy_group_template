@@ -14,6 +14,8 @@ through to the original.
 import logging
 from typing import Any, Dict, List
 
+from PyQt6.QtGui import QPainterPath
+
 logger = logging.getLogger(__name__)
 
 # The attachment dummy is always written first (see library.py).
@@ -133,3 +135,79 @@ class PlacementOverride:
         except (AttributeError, KeyError, RuntimeError, TypeError, ValueError) as exc:
             logger.warning("Could not place group: %s", exc)
         return None
+
+
+class PreviewOverride:
+    """Make the hover preview show attaching, not replacing.
+
+    The host builds its preview for its own semantics: template atom 0 is what
+    the clicked atom turns into, so it covers that atom's label and rings the
+    terminal with atom 0's *label* background — a tall ellipse around a
+    one-character symbol like the ``*`` dummy.
+
+    Neither is true here. Hiding the dummy ghost leaves the clicked atom's label
+    alone and makes the host fall back to its fixed-radius circle for the
+    connecting terminal, which is what the marker should be.
+    """
+
+    def __init__(self, scene: Any, mode_prefix: str) -> None:
+        self.scene = scene
+        self.mode_prefix = mode_prefix
+        self.preview = getattr(scene, "template_preview", None)
+        self._original: Any = None
+        self.installed = False
+
+    def install(self) -> bool:
+        """Shadow the preview's geometry setter while the palette is open."""
+        if self.installed or self.preview is None:
+            return self.installed
+        try:
+            self._original = self.preview.set_user_template_geometry
+            self.preview.set_user_template_geometry = self._set_geometry
+            self.installed = True
+        except (AttributeError, TypeError) as exc:
+            logger.warning("Could not install preview tweak: %s", exc)
+            self.installed = False
+        return self.installed
+
+    def remove(self) -> None:
+        """Restore the host's own preview behaviour."""
+        if not self.installed:
+            return
+        try:
+            del self.preview.set_user_template_geometry
+        except (AttributeError, TypeError):
+            pass
+        if (
+            self._original is not None
+            and getattr(self.preview, "set_user_template_geometry", None) is None
+        ):
+            self.preview.set_user_template_geometry = self._original
+        self.installed = False
+
+    def _owns_mode(self) -> bool:
+        mode = getattr(self.scene, "mode", "") or ""
+        return isinstance(mode, str) and mode.startswith(self.mode_prefix)
+
+    def _set_geometry(self, points: Any, bonds_info: Any, atoms_data: Any) -> Any:
+        result = None
+        if self._original is not None:
+            result = self._original(points, bonds_info, atoms_data)
+        if not self._owns_mode():
+            return result
+        try:
+            # Free placement really does draw the '*', so only adjust when the
+            # group is landing on an existing atom.
+            attaching = (getattr(self.scene, "template_context", {}) or {}).get(
+                "attachment_atom"
+            )
+            if attaching is None:
+                return result
+            ghosts = getattr(self.preview, "ghost_atoms", None) or []
+            if ghosts:
+                ghosts[ATTACHMENT_INDEX].is_visible = False
+            self.preview.replaced_label_path = QPainterPath()
+            self.preview.update()
+        except (AttributeError, IndexError, RuntimeError, TypeError) as exc:
+            logger.warning("Could not adjust template preview: %s", exc)
+        return result

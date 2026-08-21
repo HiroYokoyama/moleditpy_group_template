@@ -162,3 +162,26 @@ def test_dialog_without_a_main_window_does_not_crash(qapp):
     win.select_group(tile.group, tile)  # no host to talk to
     win.close()
     assert context.windows["palette"] is None
+
+
+def test_thumbnails_are_redrawn_when_the_theme_changes(dialog):
+    from PyQt6.QtCore import QEvent
+
+    dialog.search_box.setText("Boc")
+    first = dialog._pixmaps["Boc"]
+
+    dialog.changeEvent(QEvent(QEvent.Type.PaletteChange))
+
+    # Stale pixmaps would be dark strokes on a dark tile after a theme switch.
+    assert dialog._pixmaps["Boc"] is not first
+    assert [t.group.label for t in dialog._tiles] == ["Boc", "NHBoc"]
+
+
+def test_theme_change_before_anything_is_drawn_is_harmless(qapp):
+    from PyQt6.QtCore import QEvent
+
+    context = FakeContext()
+    win = GroupPaletteDialog(context)
+    win._pixmaps.clear()
+    win.changeEvent(QEvent(QEvent.Type.PaletteChange))
+    win.close()
