@@ -1,5 +1,8 @@
 """The library is static data, so its invariants are worth pinning down."""
 
+import json
+from pathlib import Path
+
 import pytest
 from rdkit import Chem
 
@@ -134,3 +137,94 @@ def test_styryl_and_cinnamyl_are_distinct():
     cinnamyl = next(g for g in GROUPS if g.label == "Cinnamyl")
     assert Chem.CanonSmiles(styryl.smiles) != Chem.CanonSmiles(cinnamyl.smiles)
     assert "cinnamyl" not in styryl.aliases.lower()
+
+
+# --- name-verified structures -------------------------------------------
+
+# tests/opsin_reference.json records, per entry, a name from its own label or
+# aliases that OPSIN (the IUPAC name parser) read as exactly this structure.
+# It is the audit that caught 9-Anthryl, 1-Pyrenyl, DMB and 3-Pyridazinyl.
+_REFERENCE_PATH = Path(__file__).parent / "opsin_reference.json"
+_REFERENCE = json.loads(_REFERENCE_PATH.read_text(encoding="utf-8"))["structures"]
+
+# Entries no name parser can confirm: pure abbreviations (OTs, NHBoc), organo-
+# metallics (MgBr, Li) and trivial names with no systematic form. Each was
+# checked by hand and by molecular formula instead. Adding a group means either
+# a name OPSIN understands, or a deliberate line here.
+NAME_UNVERIFIABLE = {
+    "Ac-O",
+    "Asn",
+    "B(OH)2",
+    "BF3-",
+    "Bn-N",
+    "Bneop",
+    "Bpin",
+    "Bz-O",
+    "CO2Bn",
+    "CO2Ph",
+    "CO2tBu",
+    "COF",
+    "CONHMe",
+    "CONHPh",
+    "CONMe2",
+    "COSMe",
+    "CSNH2",
+    "Cys",
+    "Gln",
+    "Glu",
+    "HgCl",
+    "Li",
+    "Met",
+    "MgBr",
+    "N-Succinimidyl",
+    "NHBoc",
+    "NHCbz",
+    "NHTs",
+    "NMe3+",
+    "NO2",
+    "OMs",
+    "OPO(OEt)2",
+    "OTBS",
+    "OTf",
+    "OTs",
+    "Oxalyl-OMe",
+    "PO(OEt)2",
+    "PO(OMe)2",
+    "PPh3+",
+    "Piv-O",
+    "SAc",
+    "SO2Cl",
+    "Thr",
+    "Trt-N",
+    "Weinreb",
+    "Xanthate",
+    "ZnBr",
+}
+
+
+@pytest.mark.parametrize("label", sorted(_REFERENCE))
+def test_structure_still_matches_the_name_opsin_read(label):
+    group = next((g for g in GROUPS if g.label == label), None)
+    assert group is not None, f"{label} vanished from the library"
+    assert Chem.CanonSmiles(group.smiles) == _REFERENCE[label]["smiles"], (
+        f"{label} no longer matches '{_REFERENCE[label]['name']}'"
+    )
+
+
+def test_every_group_is_name_verified_or_explicitly_exempt():
+    unchecked = {
+        g.label
+        for g in GROUPS
+        if g.label not in _REFERENCE and g.label not in NAME_UNVERIFIABLE
+    }
+    assert not unchecked, (
+        f"add a parseable name or an exemption for: {sorted(unchecked)}"
+    )
+
+
+def test_exemption_list_has_no_stale_entries():
+    labels = {g.label for g in GROUPS}
+    assert not (NAME_UNVERIFIABLE - labels), "exemption list mentions missing groups"
+    assert not (NAME_UNVERIFIABLE & set(_REFERENCE)), (
+        "exempt entry is actually verified"
+    )
