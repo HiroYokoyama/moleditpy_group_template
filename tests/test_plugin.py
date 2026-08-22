@@ -28,7 +28,8 @@ def test_supported_os_and_python():
     assert plugin.PLUGIN_SUPPORTED_MOLEDITPY_VERSION.startswith(">=3.0.0")
 
 
-def test_initialize_registers_a_toolbar_button_and_a_menu_entry(qapp):
+def test_initialize_registers_a_toolbar_button_only(qapp):
+    """initialize() must NOT call add_plugin_menu; run() is the menu entry point."""
     context = FakeContext()
     plugin.initialize(context)
 
@@ -36,7 +37,7 @@ def test_initialize_registers_a_toolbar_button_and_a_menu_entry(qapp):
     _, text, _, tooltip = context.toolbar_actions[0]
     assert text == "Groups"
     assert "Group Template" in tooltip
-    assert len(context.menu_actions) == 1
+    assert len(context.menu_actions) == 0
 
 
 def test_toolbar_callback_opens_the_palette(qapp):
@@ -62,15 +63,31 @@ def test_show_palette_is_a_singleton(qapp):
     first.deleteLater()
 
 
-def test_menu_callback_opens_the_same_window(qapp):
+def test_run_opens_the_palette(qapp):
+    """run(mw) is the entry point the host calls from the Plugins menu."""
     context = FakeContext()
     plugin.initialize(context)
-    opened = context.menu_actions[0][1]()
-    assert context.get_window("palette") is opened
-    opened.override.remove()
-    opened.deleteLater()
+
+    plugin.run(context.get_main_window())
+
+    window = context.get_window("palette")
+    assert window is not None
+    window.override.remove()
+    window.deleteLater()
 
 
-@pytest.mark.parametrize("hook", ["initialize", "show_palette"])
+def test_run_before_initialize_is_a_no_op():
+    """run() called before initialize() must not raise."""
+    import group_template as fresh
+
+    saved = fresh.PLUGIN_CONTEXT
+    fresh.PLUGIN_CONTEXT = None
+    try:
+        fresh.run(object())  # should return silently
+    finally:
+        fresh.PLUGIN_CONTEXT = saved
+
+
+@pytest.mark.parametrize("hook", ["initialize", "run", "show_palette"])
 def test_public_hooks_exist(hook):
     assert callable(getattr(plugin, hook))
