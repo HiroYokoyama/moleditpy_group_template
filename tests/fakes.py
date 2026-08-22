@@ -100,6 +100,7 @@ class FakePreview:
         self.updates = 0
         self.mark_first_atom = False
         self.ghost_atoms: List[FakeGhostAtom] = []
+        self.ghost_signature: Any = None
         self.replaced_label_path = "existing-label-covered"
         self.geometry_calls: List[Any] = []
 
@@ -112,10 +113,19 @@ class FakePreview:
     def set_user_template_geometry(
         self, points: Any, bonds_info: Any, atoms_data: Any
     ) -> str:
-        """The host rebuilds the ghost and marks atom 0 as a replacement."""
+        """The host rebuilds the ghost and marks atom 0 as a replacement.
+
+        It only rebuilds when the molecule itself changed: while the template
+        stays the same, moving the cursor reuses the very same ghost items, so
+        anything written onto one of them persists across calls. Rebuilding
+        unconditionally here would hide exactly the bugs that come of that.
+        """
         self.geometry_calls.append((points, bonds_info, atoms_data))
         self.mark_first_atom = True
-        self.ghost_atoms = [FakeGhostAtom(a.get("symbol", "C")) for a in atoms_data]
+        signature = tuple(a.get("symbol", "C") for a in atoms_data)
+        if signature != self.ghost_signature:
+            self.ghost_atoms = [FakeGhostAtom(a.get("symbol", "C")) for a in atoms_data]
+            self.ghost_signature = signature
         self.replaced_label_path = "existing-label-covered"
         return "host"
 

@@ -271,3 +271,25 @@ def test_preview_override_without_a_preview_is_harmless():
     override = PreviewOverride(scene, MODE_PREFIX)
     assert override.install() is False
     override.remove()
+
+
+def test_preview_restores_the_dummy_after_leaving_an_atom():
+    """Moving off an atom must bring the '*' back.
+
+    The host reuses its ghost items while the template is unchanged, so hiding
+    the dummy for an attaching hover stuck: the ghost kept promising a group
+    with no attachment point while free placement went on creating one.
+    """
+    scene = FakeScene()
+    PreviewOverride(scene, MODE_PREFIX).install()
+    scene.mode = MODE_PREFIX + "Ph"
+    args = preview_args("Ph", "*c1ccccc1")
+
+    scene.template_context = {"attachment_atom": scene.add_existing_atom("N")}
+    scene.template_preview.set_user_template_geometry(*args)
+    assert scene.template_preview.ghost_atoms[0].is_visible is False
+
+    scene.template_context = {"attachment_atom": None}
+    scene.template_preview.set_user_template_geometry(*args)
+
+    assert scene.template_preview.ghost_atoms[0].is_visible is True

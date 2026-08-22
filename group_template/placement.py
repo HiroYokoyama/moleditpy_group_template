@@ -196,17 +196,19 @@ class PreviewOverride:
         if not self._owns_mode():
             return result
         try:
-            # Free placement really does draw the '*', so only adjust when the
-            # group is landing on an existing atom.
+            # Free placement really does draw the '*', attaching consumes it.
             attaching = (getattr(self.scene, "template_context", {}) or {}).get(
                 "attachment_atom"
             )
-            if attaching is None:
-                return result
             ghosts = getattr(self.preview, "ghost_atoms", None) or []
             if ghosts:
-                ghosts[ATTACHMENT_INDEX].is_visible = False
-            self.preview.replaced_label_path = QPainterPath()
+                # Set both ways round, every time: the host reuses its ghost
+                # items while the template is unchanged, so leaving an atom
+                # would otherwise keep the dummy hidden for the rest of the
+                # hover, promising a group with no attachment point.
+                ghosts[ATTACHMENT_INDEX].is_visible = attaching is None
+            if attaching is not None:
+                self.preview.replaced_label_path = QPainterPath()
             self.preview.update()
         except (AttributeError, IndexError, RuntimeError, TypeError) as exc:
             logger.warning("Could not adjust template preview: %s", exc)
