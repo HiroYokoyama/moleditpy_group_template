@@ -24,7 +24,7 @@ logger = logging.getLogger(__name__)
 
 # --- Plugin Metadata ---
 PLUGIN_NAME = "Group Template"
-PLUGIN_VERSION = "1.0.1"
+PLUGIN_VERSION = "1.0.2"
 PLUGIN_AUTHOR = "HiroYokoyama"
 PLUGIN_DESCRIPTION = (
     "Searchable palette of 310 substituent group abbreviations (Me, Ph, Boc, Ts, "
@@ -37,15 +37,32 @@ PLUGIN_SUPPORTED_MOLEDITPY_VERSION = ">=3.0.0, <5.0.0"
 PLUGIN_SUPPORTED_PYTHON_VERSION = ">=3.9, <3.15"
 PLUGIN_SUPPORTED_OS = ["Windows", "macOS", "Linux", "WSL"]
 
+PLUGIN_CONTEXT = None
+
 
 def initialize(context):
-    """Register the palette on the Plugin Toolbar and in the Plugins menu."""
+    """Register the palette on the Plugin Toolbar.
+
+    The host auto-registers run() in the Plugins menu, so no explicit
+    add_plugin_menu() call is needed here.
+    """
+    global PLUGIN_CONTEXT
+    PLUGIN_CONTEXT = context
     context.add_toolbar_action(
         lambda: show_palette(context),
         "Groups",
         tooltip="Group Template — insert a substituent abbreviation",
     )
-    context.add_plugin_menu("Group Template...", lambda: show_palette(context))
+
+
+def run(mw):
+    """Entry point called by the host from the Plugins menu."""
+    if hasattr(mw, "host"):
+        mw = mw.host
+    context = PLUGIN_CONTEXT
+    if not context:
+        return
+    show_palette(context)
 
 
 def show_palette(context):
