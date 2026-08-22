@@ -1,6 +1,7 @@
 # Group Template
 
 [![Tests](https://github.com/HiroYokoyama/moleditpy_group_template/actions/workflows/tests.yml/badge.svg)](https://github.com/HiroYokoyama/moleditpy_group_template/actions/workflows/tests.yml)
+[![Downloads](https://img.shields.io/github/downloads/HiroYokoyama/moleditpy_group_template/total)](https://github.com/HiroYokoyama/moleditpy_group_template/releases)
 ![coverage](https://img.shields.io/badge/coverage-%3E90%25-brightgreen)
 ![license](https://img.shields.io/badge/license-GPL--3.0-blue)
 
