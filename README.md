@@ -39,11 +39,25 @@ Installer** plugin. Restart MoleditPy, or use **Plugins → Reload All Plugins**
 
 Click **Groups** on the Plugin Toolbar (or **Plugins → Group Template...**).
 
-- **Search** by name or alias — `tosyl` finds `Ts`, `trityl` finds `Trt`.
-- **Filter** by category with the dropdown.
+- **Search** by name, alias or category — `tosyl` finds `Ts`, `silyl` finds the
+  whole silyl family. Hyphens, spaces and subscripts are ignored, so
+  `tert butyl`, `tert-butyl` and `tertbutyl` all find `tBu`, and `cf3` finds
+  `CF₃`. Several words narrow together. The entry the query names outright
+  comes first: `me` puts `Me` at the top, not `Methallyl`.
+- **Filter** by category with the dropdown, including **Recently used** — the
+  last 12 groups you placed, newest first. Tick **Save history** at the bottom
+  of the palette to keep that list between sessions; it is **off by default**,
+  and unticking it forgets what was stored.
 - Click a tile, then click on the canvas. The palette stays open, so you can
-  place several groups in a row.
-- Closing the palette (or pressing Esc) returns the editor to normal drawing.
+  place several groups in a row. The armed group stays highlighted and named at
+  the bottom of the palette even while you keep searching.
+- **Keyboard**: type, press **Enter** to arm the best match, or **↓** into the
+  grid and walk it with the arrow keys, **Enter**/**Space** to arm. **Esc**
+  clears the search box first and only closes the palette once it is empty.
+- Closing the palette returns the editor to normal drawing.
+
+Tiles are drawn with the editor's own atoms and bonds, so a thumbnail looks
+like what you are about to place — same element colours, fonts and 2D settings.
 
 Undo is the editor's own: one Ctrl+Z removes the whole group.
 
@@ -66,9 +80,11 @@ Undo is the editor's own: one Ctrl+Z removes the whole group.
 | Amino acid side chain | Ala…Trp (18 side chains) |
 | Nucleobase | adenin-9-yl, thymin-1-yl, … |
 
-The library is **static and read-only** — this plugin never writes to disk. To
-keep your own groups, draw one and use MoleditPy's **User Templates → Save
-Current 2D as Template**.
+The library is **static** — the plugin adds nothing to it and touches none of
+your files. With **Save history** off, as it ships, it stores nothing at all;
+tick it and the only thing written is the list of labels you placed most
+recently, in Qt's own settings. To keep your own groups, draw one and use
+MoleditPy's **User Templates → Save Current 2D as Template**.
 
 ## Development
 

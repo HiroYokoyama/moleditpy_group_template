@@ -25,6 +25,7 @@ def test_all_groups_are_shown_by_default(dialog):
 
 def test_every_tile_shows_its_name_and_a_thumbnail(dialog):
     tile = dialog._tiles[0]
+    tile.ensure_pixmap()  # thumbnails are drawn on first paint
     labels = tile.findChildren(type(tile.children()[-1]))
     assert tile.group.label in [w.text() for w in labels if hasattr(w, "text")]
     assert any(
@@ -168,9 +169,11 @@ def test_thumbnails_are_redrawn_when_the_theme_changes(dialog):
     from PyQt6.QtCore import QEvent
 
     dialog.search_box.setText("Boc")
+    dialog._tiles[0].ensure_pixmap()
     first = dialog._pixmaps["Boc"]
 
     dialog.changeEvent(QEvent(QEvent.Type.PaletteChange))
+    dialog._tiles[0].ensure_pixmap()
 
     # Stale pixmaps would be dark strokes on a dark tile after a theme switch.
     assert dialog._pixmaps["Boc"] is not first

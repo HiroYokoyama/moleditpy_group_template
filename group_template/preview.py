@@ -105,7 +105,7 @@ def render_pixmap(
     ratio: float = 1.0,
 ) -> QPixmap:
     """Draw a template thumbnail. ``ratio`` is the device pixel ratio (Retina)."""
-    pixmap = QPixmap(int(width * ratio), int(height * ratio))
+    pixmap = QPixmap(round(width * ratio), round(height * ratio))
     pixmap.setDevicePixelRatio(ratio)
     pixmap.fill(Qt.GlobalColor.transparent)
 
@@ -115,7 +115,9 @@ def render_pixmap(
 
     scale, dx, dy = fit_transform(atoms, width, height)
     points = {a["id"]: QPointF(*transform_point(a, scale, dx, dy)) for a in atoms}
-    labelled = {a["id"] for a in atoms if a["symbol"] != _HIDDEN_SYMBOL}
+    # Whatever atom_label() actually draws is what a bond has to stop short of:
+    # a charged carbon is written "C+" even though its symbol is the hidden one.
+    labelled = {a["id"] for a in atoms if atom_label(a)}
 
     painter = QPainter(pixmap)
     painter.setRenderHint(QPainter.RenderHint.Antialiasing)

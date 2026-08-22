@@ -120,3 +120,39 @@ def test_every_library_group_renders(qapp):
     for group in GROUPS:
         template = build_template(group.label, group.smiles)
         assert not render_pixmap(template, 120, 84, QColor("black")).isNull()
+
+
+def test_a_charged_carbon_counts_as_labelled():
+    """A bond has to stop short of every label atom_label() actually draws.
+
+    "C+" is written even though the symbol is the hidden one, so keying the
+    trim off the raw symbol drew the line straight through the charge.
+    """
+    from group_template.preview import atom_label
+
+    charged = {"id": 1, "symbol": "C", "x": 0.0, "y": 0.0, "charge": 1}
+    plain = {"id": 2, "symbol": "C", "x": 50.0, "y": 0.0, "charge": 0}
+    assert atom_label(charged) and not atom_label(plain)
+
+
+def test_a_charged_carbon_bond_is_trimmed(qapp):
+    from PyQt6.QtGui import QColor
+
+    from group_template.preview import render_pixmap
+
+    template = {
+        "atoms": [
+            {"id": 0, "symbol": "C", "x": -50.0, "y": 0.0, "charge": 1},
+            {"id": 1, "symbol": "C", "x": 50.0, "y": 0.0, "charge": 0},
+        ],
+        "bonds": [{"atom1": 0, "atom2": 1, "order": 1}],
+    }
+    plain = {
+        "atoms": [dict(a, charge=0) for a in template["atoms"]],
+        "bonds": template["bonds"],
+    }
+    charged_image = render_pixmap(template, 120, 84, QColor("black")).toImage()
+    plain_image = render_pixmap(plain, 120, 84, QColor("black")).toImage()
+    # The charge is drawn and the bond stops short of it; keying the trim off
+    # the raw symbol drew the line straight through the label instead.
+    assert charged_image != plain_image

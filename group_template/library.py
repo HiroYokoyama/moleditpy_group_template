@@ -8,6 +8,7 @@ The dummy stands in for the atom you click: the group is bonded to that atom,
 which keeps its own element (see ``placement.py``).
 """
 
+import re
 from typing import List, NamedTuple
 
 
@@ -431,25 +432,56 @@ GROUPS: List[Group] = [
 
 def categories() -> List[str]:
     """Category names in library order, de-duplicated."""
-    seen: List[str] = []
-    for group in GROUPS:
-        if group.category not in seen:
-            seen.append(group.category)
-    return seen
+    return list(dict.fromkeys(group.category for group in GROUPS))
+
+
+# Abbreviations are written with punctuation nobody types the same way twice:
+# "tert-butyl" vs "tert butyl", "2-Py" vs "2py", "CF3" vs "CF₃". Folding all of
+# it away means the query and the entry meet in the middle.
+_SUBSCRIPTS = str.maketrans("₀₁₂₃₄₅₆₇₈₉", "0123456789")
+_NOISE = re.compile(r"[\s\-_,.'’()\[\]/]+")
+
+
+def normalize(text: str) -> str:
+    """Fold case, subscripts and separators so near-miss spellings still match."""
+    return _NOISE.sub("", text.translate(_SUBSCRIPTS).lower())
+
+
+def haystack(group: Group) -> str:
+    """Everything a query may match on: label, aliases and category."""
+    return normalize(f"{group.label} {group.aliases} {group.category}")
+
+
+def _rank(group: Group, needle: str) -> int:
+    """0 = the label *is* the query, 1 = the label starts with it, 2 = the rest."""
+    label = normalize(group.label)
+    if label == needle:
+        return 0
+    if needle and label.startswith(needle):
+        return 1
+    return 2
 
 
 def search(query: str, category: str = "") -> List[Group]:
-    """Filter the library by free-text query (label or alias) and category."""
-    needle = query.strip().lower()
-    result = []
+    """Filter the library by free-text query and category, best matches first.
+
+    Every whitespace-separated token must appear somewhere in the entry, so
+    "tert butyl" and "boc amine" narrow the way a reader expects. Ties keep
+    library order, which groups related entries together.
+    """
+    tokens = [normalize(token) for token in query.split()]
+    tokens = [token for token in tokens if token]
+    needle = "".join(tokens)
+
+    matched: List[Group] = []
     for group in GROUPS:
         if category and group.category != category:
             continue
-        if (
-            needle
-            and needle not in group.label.lower()
-            and needle not in group.aliases.lower()
-        ):
-            continue
-        result.append(group)
-    return result
+        if tokens:
+            text = haystack(group)
+            if not all(token in text for token in tokens):
+                continue
+        matched.append(group)
+
+    # sorted() is stable, so equally ranked entries stay in library order.
+    return sorted(matched, key=lambda group: _rank(group, needle))

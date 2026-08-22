@@ -91,3 +91,27 @@ def test_scene_attributes_reset_on_teardown_exist():
     source = read("ui/molecular_scene_handler.py") + read("ui/molecule_scene.py")
     for attribute in ("user_template_data", "template_context", "template_preview"):
         assert attribute in source
+
+
+def test_host_preview_helpers_are_still_exported():
+    # Thumbnails are drawn with the editor's own items so a tile looks like what
+    # gets placed; without these the palette falls back to its plain painter.
+    source = read("ui/preview_molecule.py")
+    assert "class PreviewScene(" in source
+    assert "def build_preview_items(" in source
+    assert "def preview_content_rect(" in source
+
+
+def test_user_template_dialog_renders_thumbnails_the_same_way():
+    # The pattern this palette copies; if the host's own dialog stops using it,
+    # revisit whether it is still the right thing to imitate.
+    source = read("ui/user_template_dialog.py")
+    assert "build_preview_items" in source
+    assert "preview_content_rect" in source
+
+
+def test_host_restores_the_drawing_cursor_when_leaving_template_mode():
+    # Teardown mirrors this; the palette must not leave a stale canvas cursor.
+    source = read("ui/user_template_dialog.py")
+    assert "CrossCursor" in source
+    assert "scene.views()" in source
