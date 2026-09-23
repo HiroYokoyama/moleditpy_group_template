@@ -24,14 +24,14 @@ logger = logging.getLogger(__name__)
 
 # --- Plugin Metadata ---
 PLUGIN_NAME = "Group Template"
-PLUGIN_VERSION = "1.0.2"
+PLUGIN_VERSION = "1.0.3"
 PLUGIN_AUTHOR = "HiroYokoyama"
 PLUGIN_DESCRIPTION = (
     "Searchable palette of 310 substituent group abbreviations (Me, Ph, Boc, Ts, "
     "TBS, ...) placed with the 2D editor's user-template mode."
 )
 PLUGIN_CATEGORY = "Editing"
-PLUGIN_TAGS = ["2D Editor", "Templates", "Structure Drawing"]
+PLUGIN_TAGS = ["Utility"]
 PLUGIN_DEPENDENCIES = ["PyQt6", "rdkit"]
 PLUGIN_SUPPORTED_MOLEDITPY_VERSION = ">=3.0.0, <5.0.0"
 PLUGIN_SUPPORTED_PYTHON_VERSION = ">=3.9, <3.15"
