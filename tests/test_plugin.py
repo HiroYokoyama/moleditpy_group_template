@@ -25,7 +25,7 @@ def test_declared_dependencies_match_the_imports():
 def test_supported_os_and_python():
     assert set(plugin.PLUGIN_SUPPORTED_OS) == {"Windows", "macOS", "Linux", "WSL"}
     assert plugin.PLUGIN_SUPPORTED_PYTHON_VERSION.startswith(">=3.10")
-    assert plugin.PLUGIN_SUPPORTED_MOLEDITPY_VERSION.startswith(">=3.0.0")
+    assert plugin.PLUGIN_SUPPORTED_MOLEDITPY_VERSION == ">=5.0.0, <6.0.0"
 
 
 def test_initialize_registers_a_toolbar_button_only(qapp):
