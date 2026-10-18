@@ -7,8 +7,8 @@ The fitting maths is kept free of Qt so it can be unit tested directly; only
 import math
 from typing import Any, Dict, List, Tuple
 
-from PyQt6.QtCore import QPointF, QRectF, Qt
-from PyQt6.QtGui import QColor, QFont, QPainter, QPen, QPixmap
+from PySide6.QtCore import QPointF, QRectF, Qt
+from PySide6.QtGui import QColor, QFont, QPainter, QPen, QPixmap
 
 # Carbons are drawn as bare vertices, like the 2D editor does.
 _HIDDEN_SYMBOL = "C"

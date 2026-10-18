@@ -11,7 +11,7 @@ from .fakes import FakeContext
 
 def test_metadata():
     assert plugin.PLUGIN_NAME == "Group Template"
-    assert re.fullmatch(r"\d+\.\d+\.\d+", plugin.PLUGIN_VERSION)
+    assert re.fullmatch(r"\d+\.\d+\.\d+(?:a\d+)?", plugin.PLUGIN_VERSION)
     assert plugin.PLUGIN_AUTHOR
     assert plugin.PLUGIN_DESCRIPTION
     assert plugin.PLUGIN_CATEGORY
@@ -19,12 +19,12 @@ def test_metadata():
 
 
 def test_declared_dependencies_match_the_imports():
-    assert set(plugin.PLUGIN_DEPENDENCIES) == {"PyQt6", "rdkit"}
+    assert set(plugin.PLUGIN_DEPENDENCIES) == {"PySide6-Essentials", "rdkit"}
 
 
 def test_supported_os_and_python():
     assert set(plugin.PLUGIN_SUPPORTED_OS) == {"Windows", "macOS", "Linux", "WSL"}
-    assert plugin.PLUGIN_SUPPORTED_PYTHON_VERSION.startswith(">=3.9")
+    assert plugin.PLUGIN_SUPPORTED_PYTHON_VERSION.startswith(">=3.10")
     assert plugin.PLUGIN_SUPPORTED_MOLEDITPY_VERSION.startswith(">=3.0.0")
 
 

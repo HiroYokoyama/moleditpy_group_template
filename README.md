@@ -90,7 +90,7 @@ MoleditPy's **User Templates → Save Current 2D as Template**.
 ## Development
 
 ```bash
-pip install pytest pytest-cov PyQt6 rdkit
+pip install pytest pytest-cov PySide6 rdkit
 QT_QPA_PLATFORM=offscreen python -m pytest tests/ -v
 ```
 

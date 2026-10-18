@@ -14,7 +14,7 @@ through to the original.
 import logging
 from typing import Any, Dict, List
 
-from PyQt6.QtGui import QPainterPath
+from PySide6.QtGui import QPainterPath
 
 logger = logging.getLogger(__name__)
 

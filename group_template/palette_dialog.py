@@ -17,8 +17,8 @@ recently used groups and a grid that reflows with the window.
 import logging
 from typing import Any, Dict, List, Optional
 
-from PyQt6.QtCore import QEvent, QSettings, Qt, QTimer
-from PyQt6.QtWidgets import (
+from PySide6.QtCore import QEvent, QSettings, Qt, QTimer
+from PySide6.QtWidgets import (
     QCheckBox,
     QComboBox,
     QDialog,

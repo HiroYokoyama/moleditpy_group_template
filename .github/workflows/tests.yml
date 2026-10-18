@@ -12,7 +12,7 @@ permissions:
 
 jobs:
   # -------------------------------------------------------------------------
-  # Unit tests. Real PyQt6 and real RDKit: the palette is a widget grid and
+  # Unit tests. Real PySide6-Essentials and real RDKit: the palette is a widget grid and
   # every template is built by RDKit, so a mocked tier would test almost
   # nothing here.
   # -------------------------------------------------------------------------
@@ -37,7 +37,7 @@ jobs:
             libegl1 libgl1 libxkbcommon-x11-0 libdbus-1-3
 
       - name: Install dependencies
-        run: pip install pytest pytest-cov PyQt6 rdkit
+        run: pip install pytest pytest-cov PySide6-Essentials rdkit
 
       - name: Run tests with coverage
         env:
@@ -68,11 +68,11 @@ jobs:
             libegl1 libgl1 libxkbcommon-x11-0 libdbus-1-3
 
       - name: Install dependencies
-        run: pip install pytest PyQt6 rdkit
+        run: pip install pytest PySide6-Essentials rdkit
 
       - name: Clone main MoleditPy application
         run: |
-          git clone --depth 1 \
+          git clone --depth 1 --branch "${{ vars.MOLEDITPY_REF || 'migrate/pyside6-without-openbabel' }}" \
             https://github.com/HiroYokoyama/python_molecular_editor.git \
             ../python_molecular_editor
 

@@ -166,7 +166,7 @@ def test_dialog_without_a_main_window_does_not_crash(qapp):
 
 
 def test_thumbnails_are_redrawn_when_the_theme_changes(dialog):
-    from PyQt6.QtCore import QEvent
+    from PySide6.QtCore import QEvent
 
     dialog.search_box.setText("Boc")
     dialog._tiles[0].ensure_pixmap()
@@ -181,7 +181,7 @@ def test_thumbnails_are_redrawn_when_the_theme_changes(dialog):
 
 
 def test_theme_change_before_anything_is_drawn_is_harmless(qapp):
-    from PyQt6.QtCore import QEvent
+    from PySide6.QtCore import QEvent
 
     context = FakeContext()
     win = GroupPaletteDialog(context)

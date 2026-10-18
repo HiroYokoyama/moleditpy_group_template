@@ -14,8 +14,8 @@ caller falls back to ``preview.render_pixmap``, which needs nothing but Qt.
 import logging
 from typing import Any, Dict, List, Optional, Tuple
 
-from PyQt6.QtCore import QRectF, Qt
-from PyQt6.QtGui import QPainter, QPixmap
+from PySide6.QtCore import QRectF, Qt
+from PySide6.QtGui import QPainter, QPixmap
 
 logger = logging.getLogger(__name__)
 
@@ -60,7 +60,7 @@ def available() -> bool:
 
 def _preview_inputs(template: Dict[str, Any]) -> Tuple[List[Any], List[Any]]:
     """Convert a PME template into the (atoms, bonds) build_preview_items wants."""
-    from PyQt6.QtCore import QPointF  # local: only needed on the host path
+    from PySide6.QtCore import QPointF  # local: only needed on the host path
 
     atoms = template.get("atoms", [])
     index_of_id = {atom.get("id", i): i for i, atom in enumerate(atoms)}

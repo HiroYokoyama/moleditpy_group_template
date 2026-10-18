@@ -78,7 +78,7 @@ def test_dummy_is_labelled_in_every_library_thumbnail():
 
 
 def test_render_pixmap_produces_an_image(qapp):
-    from PyQt6.QtGui import QColor
+    from PySide6.QtGui import QColor
 
     pixmap = render_pixmap(
         build_template("Boc", "*C(=O)OC(C)(C)C"), 120, 84, QColor("black")
@@ -88,7 +88,7 @@ def test_render_pixmap_produces_an_image(qapp):
 
 
 def test_render_pixmap_honours_device_pixel_ratio(qapp):
-    from PyQt6.QtGui import QColor
+    from PySide6.QtGui import QColor
 
     pixmap = render_pixmap(
         build_template("Me", "*C"), 120, 84, QColor("black"), ratio=2.0
@@ -98,14 +98,14 @@ def test_render_pixmap_honours_device_pixel_ratio(qapp):
 
 
 def test_render_pixmap_survives_an_empty_template(qapp):
-    from PyQt6.QtGui import QColor
+    from PySide6.QtGui import QColor
 
     pixmap = render_pixmap({"atoms": [], "bonds": []}, 40, 40, QColor("black"))
     assert not pixmap.isNull()
 
 
 def test_render_pixmap_ignores_bonds_with_unknown_atoms(qapp):
-    from PyQt6.QtGui import QColor
+    from PySide6.QtGui import QColor
 
     template = build_template("Me", "*C")
     template["bonds"].append({"atom1": 0, "atom2": 99, "order": 1, "stereo": 0})
@@ -113,7 +113,7 @@ def test_render_pixmap_ignores_bonds_with_unknown_atoms(qapp):
 
 
 def test_every_library_group_renders(qapp):
-    from PyQt6.QtGui import QColor
+    from PySide6.QtGui import QColor
 
     from group_template.library import GROUPS
 
@@ -136,7 +136,7 @@ def test_a_charged_carbon_counts_as_labelled():
 
 
 def test_a_charged_carbon_bond_is_trimmed(qapp):
-    from PyQt6.QtGui import QColor
+    from PySide6.QtGui import QColor
 
     from group_template.preview import render_pixmap
 
