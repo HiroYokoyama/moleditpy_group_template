@@ -2,8 +2,8 @@
 picking, recently used groups, a reflowing grid and the bugs those exposed."""
 
 import pytest
-from PyQt6.QtCore import QEvent, QPoint, Qt
-from PyQt6.QtGui import QKeyEvent, QMouseEvent
+from PySide6.QtCore import QEvent, QPoint, Qt
+from PySide6.QtGui import QKeyEvent, QMouseEvent
 
 from group_template.builder import MODE_PREFIX
 from group_template.palette_dialog import (
@@ -317,7 +317,7 @@ def test_the_default_category_is_still_everything(dialog):
 
 
 def test_the_palette_sits_beside_the_editor(qapp):
-    from PyQt6.QtWidgets import QWidget
+    from PySide6.QtWidgets import QWidget
 
     parent = QWidget()
     parent.setGeometry(100, 100, 1200, 800)

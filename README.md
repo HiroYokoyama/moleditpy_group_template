@@ -90,7 +90,7 @@ MoleditPy's **User Templates → Save Current 2D as Template**.
 ## Development
 
 ```bash
-pip install pytest pytest-cov PyQt6 rdkit
+pip install pytest pytest-cov PySide6 rdkit
 QT_QPA_PLATFORM=offscreen python -m pytest tests/ -v
 ```
 
@@ -99,4 +99,8 @@ main app when the two repos are checked out as siblings.
 
 ## License
 
-GPL-3.0. See [LICENSE](LICENSE).
+LGPL-3.0-or-later. See [LICENSE](LICENSE).
+
+## Licensing scope
+
+First-party code in this migration is LGPL-3.0-or-later. See [LICENSE](LICENSE), [COPYING](COPYING) and [dependency/provenance terms](LICENSING.md). Third-party components and historical releases retain their own terms.

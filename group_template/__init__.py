@@ -10,13 +10,13 @@ like what will land on the canvas.
 
 Source code, README, and full license (GNU GPL):
     https://github.com/HiroYokoyama/moleditpy_group_template
-Copyright (c) HiroYokoyama. Licensed under the GNU General Public License;
+Copyright (c) HiroYokoyama. Licensed under the GNU Lesser General Public License;
 see the LICENSE file in the repository above for the full terms.
 """
 
 import logging
 
-from PyQt6.QtWidgets import QWidget
+from PySide6.QtWidgets import QWidget
 
 from .palette_dialog import WINDOW_ID, GroupPaletteDialog
 
@@ -24,7 +24,7 @@ logger = logging.getLogger(__name__)
 
 # --- Plugin Metadata ---
 PLUGIN_NAME = "Group Template"
-PLUGIN_VERSION = "1.0.3"
+PLUGIN_VERSION = "2.0.0"
 PLUGIN_AUTHOR = "HiroYokoyama"
 PLUGIN_DESCRIPTION = (
     "Searchable palette of 310 substituent group abbreviations (Me, Ph, Boc, Ts, "
@@ -32,9 +32,9 @@ PLUGIN_DESCRIPTION = (
 )
 PLUGIN_CATEGORY = "Editing"
 PLUGIN_TAGS = ["Utility"]
-PLUGIN_DEPENDENCIES = ["PyQt6", "rdkit"]
-PLUGIN_SUPPORTED_MOLEDITPY_VERSION = ">=3.0.0, <5.0.0"
-PLUGIN_SUPPORTED_PYTHON_VERSION = ">=3.9, <3.15"
+PLUGIN_DEPENDENCIES = ["PySide6-Essentials", "rdkit"]
+PLUGIN_SUPPORTED_MOLEDITPY_VERSION = ">=5.0.0, <6.0.0"
+PLUGIN_SUPPORTED_PYTHON_VERSION = ">=3.10, <3.15"
 PLUGIN_SUPPORTED_OS = ["Windows", "macOS", "Linux", "WSL"]
 
 PLUGIN_CONTEXT = None
