@@ -17,7 +17,7 @@ permissions:
   contents: read
 
 env:
-  MOLEDITPY_REF: ${{ inputs.moleditpy_ref || vars.MOLEDITPY_REF || 'migrate/pyside6-without-openbabel' }}
+  MOLEDITPY_REF: ${{ inputs.moleditpy_ref || vars.MOLEDITPY_REF || 'main' }}
 
 jobs:
   # -------------------------------------------------------------------------
@@ -54,7 +54,7 @@ jobs:
         run: python -m pytest tests/ -v --tb=short --cov=group_template --cov-report=term-missing
 
   # -------------------------------------------------------------------------
-  # Integration tests — clones the main app so the API checker and the
+  # Integration tests  Eclones the main app so the API checker and the
   # host-contract tests run against real MoleditPy source. Placement shadows a
   # scene method that is not part of PluginContext, so this tier is the only
   # thing that would catch the host renaming it.
