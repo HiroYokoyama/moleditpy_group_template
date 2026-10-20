@@ -24,3 +24,20 @@ def qapp():
 
     app = QApplication.instance() or QApplication([])
     yield app
+
+
+@pytest.fixture(autouse=True)
+def close_palette_dialogs():
+    """Destroy each test's palettes before their Qt callbacks outlive the test."""
+    yield
+    from PySide6.QtCore import QCoreApplication, QEvent
+    from PySide6.QtWidgets import QApplication
+    from group_template.palette_dialog import GroupPaletteDialog
+
+    app = QApplication.instance()
+    if app is not None:
+        for widget in app.topLevelWidgets():
+            if isinstance(widget, GroupPaletteDialog):
+                widget.close()
+                widget.deleteLater()
+        QCoreApplication.sendPostedEvents(None, QEvent.Type.DeferredDelete)
